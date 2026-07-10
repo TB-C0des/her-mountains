@@ -42,14 +42,16 @@ export default async function StatePage({ params }: Props) {
   for (const t of stateTreks) coverMap[t.id] = getTrekCover(t.id);
 
   return (
-    <main style={{ minHeight: "100vh", background: "#f5eedd", color: "#2b241c" }} className="page-fade-in">
+    <main style={{ minHeight: "100vh", background: "#ddd5c0", color: "#2b241c" }} className="page-fade-in">
 
       {/* Hero */}
       {heroPhoto ? (
-        <div style={{ position: "relative", height: "clamp(240px, 40vw, 320px)", backgroundImage: `linear-gradient(to top, #f5eedd 0%, rgba(43,36,28,0.05) 40%, rgba(43,36,28,0.3) 100%), url(${heroPhoto})`, backgroundSize: "cover", backgroundPosition: "center" }}>
-          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 24px 24px" }}>
-            <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(245,238,221,0.7)", marginBottom: "4px" }}>stamped in your passport</p>
-            <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.4rem, 8vw, 3.2rem)", fontWeight: 600, fontStyle: "italic", color: "#f5eedd", lineHeight: 1.05, textShadow: "0 2px 20px rgba(0,0,0,0.25)" }}>{state.name}</h1>
+        <div style={{ position: "relative", height: "clamp(280px, 45vw, 380px)", backgroundImage: `url(${heroPhoto})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+          {/* Dark gradient only at the bottom for text legibility — no light wash */}
+          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(20,14,8,0.72) 0%, rgba(20,14,8,0.25) 40%, transparent 75%)" }} />
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 24px 28px" }}>
+            <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(245,238,221,0.65)", marginBottom: "4px" }}>stamped in your passport</p>
+            <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.4rem, 8vw, 3.2rem)", fontWeight: 600, fontStyle: "italic", color: "#f5eedd", lineHeight: 1.05, textShadow: "0 2px 24px rgba(0,0,0,0.5)" }}>{state.name}</h1>
           </div>
         </div>
       ) : (
@@ -59,11 +61,11 @@ export default async function StatePage({ params }: Props) {
       {/* Content */}
       <section style={{ maxWidth: "672px", margin: "0 auto", padding: "32px 24px 80px" }}>
 
-        <p style={{ fontFamily: "var(--font-display)", fontSize: "1.15rem", fontStyle: "italic", color: "#6b5f4f", marginBottom: "36px", lineHeight: 1.6 }}>
+        <p style={{ fontFamily: "var(--font-display)", fontSize: "1.15rem", fontStyle: "italic", color: "#4a3f35", marginBottom: "36px", lineHeight: 1.6 }}>
           {state.tagline}
         </p>
 
-        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#6b5f4f", marginBottom: "16px" }}>
+        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#5a4f45", marginBottom: "16px" }}>
           treks · {stateTreks.length} recorded
         </p>
 
@@ -74,28 +76,28 @@ export default async function StatePage({ params }: Props) {
                 key={trek.id}
                 href={`/treks/${trek.id}`}
                 className="trek-card"
-                style={{ display: "flex", alignItems: "stretch", borderRadius: "10px", border: "1px solid rgba(43,36,28,0.1)", overflow: "hidden", background: "rgba(236,224,196,0.6)", textDecoration: "none", color: "inherit" }}
+                style={{ display: "flex", alignItems: "stretch", borderRadius: "10px", border: "1px solid rgba(43,36,28,0.18)", overflow: "hidden", background: "rgba(210,200,178,0.75)", textDecoration: "none", color: "inherit" }}
               >
                 <div style={{ width: "48px", flexShrink: 0, background: idx % 2 === 0 ? "linear-gradient(180deg, #52705c, #3d5445)" : "linear-gradient(180deg, #3e5169, #2d3d52)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "4px", padding: "12px 0" }}>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "rgba(245,238,221,0.6)", letterSpacing: "0.1em" }}>{String(idx + 1).padStart(2, "0")}</span>
+                  <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "rgba(245,238,221,0.7)", letterSpacing: "0.1em" }}>{String(idx + 1).padStart(2, "0")}</span>
                   <svg width="18" height="14" viewBox="0 0 18 14" fill="none"><path d="M1 13L6 4L9 8L12 3L17 13H1Z" fill="rgba(245,238,221,0.35)" /></svg>
                 </div>
                 {coverMap[trek.id] && (
-                  <div style={{ width: "90px", flexShrink: 0, backgroundImage: `url(${coverMap[trek.id]})`, backgroundSize: "cover", backgroundPosition: "center", backgroundColor: "#ddd2b8" }} />
+                  <div style={{ width: "90px", flexShrink: 0, backgroundImage: `url(${coverMap[trek.id]})`, backgroundSize: "cover", backgroundPosition: "center", backgroundColor: "#c8b99a" }} />
                 )}
                 <div style={{ flex: 1, minWidth: 0, padding: "14px 16px" }}>
-                  <p style={{ fontFamily: "var(--font-display)", fontSize: "1.3rem", fontWeight: 600, fontStyle: "italic", lineHeight: 1.2, marginBottom: "5px", color: "#2b241c" }}>{trek.name}</p>
-                  <p style={{ fontSize: "0.83rem", color: "#6b5f4f", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{trek.yourLines[0]}</p>
+                  <p style={{ fontFamily: "var(--font-display)", fontSize: "1.3rem", fontWeight: 600, fontStyle: "italic", lineHeight: 1.2, marginBottom: "5px", color: "#1e1810" }}>{trek.name}</p>
+                  <p style={{ fontSize: "0.83rem", color: "#4a3f35", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{trek.yourLines[0]}</p>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", paddingRight: "16px", color: "#3e5169", fontFamily: "var(--font-mono)", fontSize: "1rem" }}>→</div>
               </Link>
             ))}
           </div>
         ) : (
-          <p style={{ fontSize: "0.9rem", fontStyle: "italic", color: "#6b5f4f" }}>No treks recorded for this state yet.</p>
+          <p style={{ fontSize: "0.9rem", fontStyle: "italic", color: "#4a3f35" }}>No treks recorded for this state yet.</p>
         )}
 
-        <div style={{ marginTop: "48px", paddingTop: "24px", borderTop: "1px solid rgba(43,36,28,0.1)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ marginTop: "48px", paddingTop: "24px", borderTop: "1px solid rgba(43,36,28,0.18)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <Link href="/" style={{ fontFamily: "var(--font-mono)", fontSize: "0.7rem", color: "#3e5169", textDecoration: "none" }}>← back to the map</Link>
           <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "rgba(43,36,28,0.25)", letterSpacing: "0.15em" }}>HER MOUNTAINS</span>
         </div>

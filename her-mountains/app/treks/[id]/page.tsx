@@ -34,13 +34,13 @@ export default async function TrekPage({ params }: Props) {
   return (
     <main
       className="page-fade-in"
-      style={{ minHeight: "100vh", background: "#f5eedd", color: "#2b241c" }}
+      style={{ minHeight: "100vh", background: "#ede4d0", color: "#2b241c" }}
     >
       {/* ── Full-bleed hero cover photo ── */}
       <div
         style={{
           position: "relative",
-          height: "clamp(260px, 45vw, 420px)",
+          height: "clamp(320px, 52vw, 500px)",
           overflow: "hidden",
           backgroundColor: "#ddd2b8",
         }}
@@ -55,15 +55,15 @@ export default async function TrekPage({ params }: Props) {
             backgroundPosition: "center",
           }}
         />
-        {/* Fade to page colour at bottom */}
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(43,36,28,0.08) 0%, rgba(245,238,221,0) 30%, rgba(245,238,221,0.85) 80%, #f5eedd 100%)" }} />
+        {/* Only a thin fade at the very bottom — no white wash */}
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.04) 0%, transparent 35%, rgba(237,228,208,0.55) 88%, #ede4d0 100%)" }} />
       </div>
 
       {/* ── Content ── */}
       <section
         style={{
           maxWidth: "800px",
-          margin: "-48px auto 0",
+          margin: "-24px auto 0",
           padding: "0 32px 80px",
           position: "relative",
           zIndex: 1,
@@ -82,7 +82,7 @@ export default async function TrekPage({ params }: Props) {
         </h1>
 
         {/* Personal note card */}
-        <div style={{ borderRadius: "12px", padding: "24px 28px", marginBottom: "20px", background: "rgba(236,224,196,0.7)", borderLeft: "4px solid #d97a46" }}>
+        <div style={{ borderRadius: "12px", padding: "24px 28px", marginBottom: "20px", background: "rgba(210,196,168,0.7)", borderLeft: "4px solid #d97a46" }}>
           <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#d97a46", marginBottom: "12px" }}>a note for you</p>
           {trek.yourLines.map((line) => (
             <p key={line} style={{ fontFamily: "var(--font-display)", fontSize: "1.35rem", fontStyle: "italic", color: "#2b241c", lineHeight: 1.65 }}>"{line}"</p>
@@ -90,7 +90,7 @@ export default async function TrekPage({ params }: Props) {
         </div>
 
         {/* Memory corner */}
-        <div style={{ borderRadius: "12px", padding: "24px 28px", marginBottom: "40px", background: "rgba(62,81,105,0.06)", border: "1px solid rgba(62,81,105,0.14)" }}>
+        <div style={{ borderRadius: "12px", padding: "24px 28px", marginBottom: "40px", background: "rgba(180,196,210,0.14)", border: "1px solid rgba(62,81,105,0.2)" }}>
           <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.65rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#5b7089", marginBottom: "18px" }}>memory corner</p>
           <ul style={{ display: "flex", flexDirection: "column", gap: "16px", listStyle: "none", padding: 0, margin: 0 }}>
             {trek.prompts.map((prompt, i) => (
