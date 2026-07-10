@@ -50,11 +50,9 @@ export default function IndiaMap() {
   const height = 760;
   const projection = geoMercator().fitSize(
     [width, height],
-    { type: "FeatureCollection", features } as Parameters<
-      typeof geoMercator
-    >[0] extends never ? never : never
+    { type: "FeatureCollection", features } as GeoJSON.FeatureCollection
   );
-  const pathGen = geoPath(projection as Parameters<typeof geoPath>[0]);
+  const pathGen = geoPath(projection);
 
   const stamps = states
     .map((s) => {
