@@ -50,11 +50,10 @@ export default function IndiaMap() {
   const height = 760;
   const projection = geoMercator().fitSize(
     [width, height],
-    { type: "FeatureCollection", features } as Parameters<
-      typeof geoMercator
-    >[0] extends never ? never : never
+    { type: "FeatureCollection", features } as never
   );
-  const pathGen = geoPath(projection as Parameters<typeof geoPath>[0]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const pathGen = geoPath(projection as any);
 
   const stamps = states
     .map((s) => {
@@ -63,7 +62,8 @@ export default function IndiaMap() {
           getStateName(f.properties).toUpperCase() === s.name.toUpperCase()
       );
       if (!feature) return null;
-      const [cx, cy] = pathGen.centroid(feature as GeoJSON.Feature);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const [cx, cy] = pathGen.centroid(feature as any);
       return { ...s, cx, cy };
     })
     .filter(Boolean) as Array<{
@@ -125,7 +125,8 @@ export default function IndiaMap() {
               return (
                 <path
                   key={i}
-                  d={pathGen(f as GeoJSON.Feature) || ""}
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  d={pathGen(f as any) || ""}
                   className={`state-path ${isActive ? "active" : ""}`}
                   style={{
                     fill: isActive ? "#52705c" : "#b8a882",
