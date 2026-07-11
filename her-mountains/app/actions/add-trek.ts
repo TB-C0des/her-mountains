@@ -3,7 +3,7 @@
 import { loadCustomTreks, saveCustomTreks } from "../../lib/custom-treks";
 import { commitFile, readJsonFile } from "../../lib/github";
 
-const CUSTOM_TREKS_PATH = "data/custom-treks.json";
+const CUSTOM_TREKS_PATH = "her-mountains/data/custom-treks.json";
 
 export async function addTrek(formData: FormData): Promise<{ ok: boolean; trekId?: string; error?: string }> {
   const name     = (formData.get("name")      as string)?.trim();

@@ -4,61 +4,93 @@ import path from "path";
 const PHOTOS_DIR = path.join(process.cwd(), "public", "photos");
 const IMAGE_EXTS = new Set([".jpg", ".jpeg", ".png", ".webp", ".avif"]);
 
-/**
- * Returns all gallery photos for a trek (everything except cover.jpg),
- * sorted alphabetically. Adding any image file to the folder is enough —
- * no code changes needed.
- *
- * @param trekId  e.g. "brahmatal"
- */
-export function getTrekPhotos(trekId: string): string[] {
-  const dir = path.join(PHOTOS_DIR, trekId);
-  if (!fs.existsSync(dir)) return [];
+// ─── helpers ────────────────────────────────────────────────────────────────
 
-  return fs
-    .readdirSync(dir)
-    .filter((f) => {
-      const ext = path.extname(f).toLowerCase();
-      return IMAGE_EXTS.has(ext) && f.toLowerCase() !== "cover.jpg";
-    })
-    .sort()
-    .map((f) => `/photos/${trekId}/${f}`);
+function rawUrl(ghPath: string): string {
+  const owner  = process.env.GITHUB_OWNER!;
+  const repo   = process.env.GITHUB_REPO!;
+  const branch = process.env.GITHUB_BRANCH ?? "main";
+  return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${ghPath}`;
 }
 
-/**
- * Returns the cover photo path if it exists, otherwise null.
- * Falls back to the first gallery photo if no cover.jpg.
- *
- * @param trekId  e.g. "brahmatal"
- */
-export function getTrekCover(trekId: string): string | null {
-  const dir = path.join(PHOTOS_DIR, trekId);
-  if (!fs.existsSync(dir)) return null;
+async function listGitHubDir(ghPath: string): Promise<string[]> {
+  const token  = process.env.GITHUB_TOKEN!;
+  const owner  = process.env.GITHUB_OWNER!;
+  const repo   = process.env.GITHUB_REPO!;
+  const branch = process.env.GITHUB_BRANCH ?? "main";
 
-  // Try cover.jpg first, then cover.jpeg, cover.png, cover.webp
+  const res = await fetch(
+    `https://api.github.com/repos/${owner}/${repo}/contents/${ghPath}?ref=${branch}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+      },
+      cache: "no-store",
+    }
+  );
+  if (!res.ok) return [];
+  const data = await res.json();
+  if (!Array.isArray(data)) return [];
+  return (data as Array<{ name: string; type: string }>)
+    .filter((f) => f.type === "file")
+    .map((f) => f.name);
+}
+
+function listLocalDir(dir: string): string[] {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir);
+}
+
+function isImage(filename: string): boolean {
+  return IMAGE_EXTS.has(path.extname(filename).toLowerCase());
+}
+
+const useGitHub = () => !!process.env.GITHUB_TOKEN;
+
+// ─── public API ─────────────────────────────────────────────────────────────
+
+export async function getTrekPhotos(trekId: string): Promise<string[]> {
+  const ghPath = `her-mountains/public/photos/${trekId}`;
+  const files = useGitHub()
+    ? await listGitHubDir(ghPath)
+    : listLocalDir(path.join(PHOTOS_DIR, trekId));
+
+  return files
+    .filter((f) => isImage(f) && f.toLowerCase() !== "cover.jpg")
+    .sort()
+    .map((f) =>
+      useGitHub() ? rawUrl(`${ghPath}/${f}`) : `/photos/${trekId}/${f}`
+    );
+}
+
+export async function getTrekCover(trekId: string): Promise<string | null> {
+  const ghPath = `her-mountains/public/photos/${trekId}`;
+  const files = useGitHub()
+    ? await listGitHubDir(ghPath)
+    : listLocalDir(path.join(PHOTOS_DIR, trekId));
+
   for (const name of ["cover.jpg", "cover.jpeg", "cover.png", "cover.webp"]) {
-    if (fs.existsSync(path.join(dir, name))) {
-      return `/photos/${trekId}/${name}`;
+    if (files.includes(name)) {
+      return useGitHub() ? rawUrl(`${ghPath}/${name}`) : `/photos/${trekId}/${name}`;
     }
   }
 
-  // Fall back to first gallery photo
-  const gallery = getTrekPhotos(trekId);
-  return gallery[0] ?? null;
+  const first = files.filter((f) => isImage(f) && f.toLowerCase() !== "cover.jpg").sort()[0];
+  if (!first) return null;
+  return useGitHub() ? rawUrl(`${ghPath}/${first}`) : `/photos/${trekId}/${first}`;
 }
 
-/**
- * Returns the state hero background if it exists, otherwise null.
- *
- * @param stateId  e.g. "maharashtra"
- */
-export function getStateBg(stateId: string): string | null {
-  const dir = path.join(PHOTOS_DIR, "states", stateId);
-  if (!fs.existsSync(dir)) return null;
+export async function getStateBg(stateId: string): Promise<string | null> {
+  const ghPath = `her-mountains/public/photos/states/${stateId}`;
+  const files = useGitHub()
+    ? await listGitHubDir(ghPath)
+    : listLocalDir(path.join(PHOTOS_DIR, "states", stateId));
 
   for (const name of ["bg.jpg", "bg.jpeg", "bg.png", "bg.webp"]) {
-    if (fs.existsSync(path.join(dir, name))) {
-      return `/photos/states/${stateId}/${name}`;
+    if (files.includes(name)) {
+      return useGitHub() ? rawUrl(`${ghPath}/${name}`) : `/photos/states/${stateId}/${name}`;
     }
   }
   return null;

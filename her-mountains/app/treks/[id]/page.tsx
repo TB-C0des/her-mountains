@@ -30,8 +30,8 @@ export default async function TrekPage({ params }: Props) {
   const parentState = states.find((s) => s.trekNames.includes(trek.name));
 
   // Dynamically read photos from disk — no code change needed to add more
-  const coverPhoto = getTrekCover(trek.id);
-  const galleryPhotos = getTrekPhotos(trek.id);
+  const coverPhoto = await getTrekCover(trek.id);
+  const galleryPhotos = await getTrekPhotos(trek.id);
 
   return (
     <main

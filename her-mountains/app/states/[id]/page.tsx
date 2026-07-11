@@ -41,9 +41,9 @@ export default async function StatePage({ params }: Props) {
   const stateTreks = allTreks.filter((t) =>
     state.trekNames.includes(t.name) || t.state === state.name
   );
-  const heroPhoto = getStateBg(state.id) ?? getTrekCover(stateTreks[0]?.id ?? "");
+  const heroPhoto = (await getStateBg(state.id)) ?? (await getTrekCover(stateTreks[0]?.id ?? ""));
   const coverMap: Record<string, string | null> = {};
-  for (const t of stateTreks) coverMap[t.id] = getTrekCover(t.id);
+  for (const t of stateTreks) coverMap[t.id] = await getTrekCover(t.id);
 
   return (
     <main style={{ minHeight: "100vh", background: "#ddd5c0", color: "#2b241c" }} className="page-fade-in">

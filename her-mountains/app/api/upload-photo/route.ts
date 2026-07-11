@@ -25,7 +25,8 @@ export async function POST(req: NextRequest) {
 
       if (process.env.GITHUB_TOKEN) {
         // Production: commit to GitHub repo
-        const ghPath = `public/photos/${trekId}/${filename}`;
+        // The Next.js app lives in a subfolder "her-mountains/" within the repo
+        const ghPath = `her-mountains/public/photos/${trekId}/${filename}`;
         await commitFile(ghPath, buffer.toString("base64"), `Add photo to ${trekId}`);
       } else {
         // Local dev: write to disk
