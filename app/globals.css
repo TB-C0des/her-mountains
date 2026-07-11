@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+/* ─── dark warm design tokens ───────────────────────────────── */
+@theme {
+  /* backgrounds */
+  --color-bg:         #1a1510;
+  --color-bg-raised:  #211c15;
+  --color-bg-card:    #2a2218;
+  --color-bg-subtle:  #322b1f;
+
+  /* text */
+  --color-text:       #e8dcc8;
+  --color-text-soft:  #9e8f7a;
+  --color-text-muted: #5c5144;
+
+  /* accents */
+  --color-gold:       #c9a96e;
+  --color-gold-soft:  #a07c48;
+  --color-pine:       #6b9478;
+  --color-pine-dark:  #4a6b55;
+  --color-dusk:       #7b9ab5;
+  --color-dusk-soft:  #5a7a99;
+  --color-sunrise:    #c97b4b;
+
+  /* borders */
+  --color-line:       rgba(201,169,110,0.12);
+  --color-line-soft:  rgba(232,220,200,0.07);
+
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body:    "DM Sans", system-ui, sans-serif;
+  --font-mono:    "DM Mono", monospace;
+}
+
+/* ─── reset ─────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─── base ──────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: #1a1510;
+  color: #e8dcc8;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── typography helpers ────────────────────────────────────── */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.font-mono {
+  font-family: var(--font-mono);
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #9e8f7a;
+}
+
+/* ─── map ───────────────────────────────────────────────────── */
+.state-path {
+  transition: fill 0.2s ease, fill-opacity 0.2s ease, filter 0.2s ease;
+}
+.stamp-pin {
+  transition: transform 0.2s ease, filter 0.2s ease;
+  transform-box: fill-box;
+  transform-origin: center;
+  cursor: pointer;
+}
+.stamp-pin:hover {
+  transform: scale(1.6);
+}
+
+/* ─── cards ─────────────────────────────────────────────────── */
+.trek-card {
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+.trek-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+  border-color: rgba(201,169,110,0.4) !important;
+}
+
+/* ─── photo polaroid ────────────────────────────────────────── */
+.polaroid {
+  background: #2a2218;
+  padding: 8px 8px 28px 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 1px 4px rgba(0,0,0,0.4);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  cursor: pointer;
+}
+.polaroid:hover {
+  transform: scale(1.04) rotate(0deg) !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.65);
+}
+
+/* ─── lightbox ──────────────────────────────────────────────── */
+.lightbox-backdrop {
+  animation: fadeIn 0.2s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ─── page transitions ──────────────────────────────────────── */
+.page-fade-in {
+  animation: pageFade 0.5s ease;
+}
+@keyframes pageFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
