@@ -175,11 +175,14 @@ export default function IndiaMap() {
                 onClick={() => router.push(`/states/${s.id}`)}
                 onMouseEnter={() => setHovered(s.id)}
                 onMouseLeave={() => setHovered(null)}
-                className="font-mono text-xs px-3 py-1 rounded-full border transition-all"
+                className="font-mono rounded-full border transition-all"
                 style={{
                   borderColor: "#3e5169",
                   color: hovered === s.id ? "#f5eedd" : "#3e5169",
                   backgroundColor: hovered === s.id ? "#3e5169" : "transparent",
+                  padding: "8px 24px",
+                  fontSize: "0.7rem",
+                  letterSpacing: "0.05em",
                 }}
               >
                 {s.name}

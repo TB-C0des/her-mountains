@@ -105,7 +105,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer style={{ textAlign: "center", paddingBottom: "28px", position: "relative", zIndex: 2 }}>
-        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#6b5f4f" }}>
+        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", letterSpacing: "0.18em", textTransform: "uppercase", color: "#6b5f4f", fontWeight: 700 }}>
           made with care ✦ for the one who keeps going
         </p>
       </footer>
