@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { states } from "../../../data/states";
+import { treks as baseTreks } from "../../../data/treks";
 import { getAllTreks } from "../../../lib/all-treks";
 import { getStateBg, getTrekCover } from "../../../lib/photos";
 import AddTrekForm from "../../components/AddTrekForm";
+import DeleteTrekButton from "../../components/DeleteTrekButton";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -94,6 +96,9 @@ export default async function StatePage({ params }: Props) {
                   <p style={{ fontSize: "0.83rem", color: "#4a3f35", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{trek.yourLines[0]}</p>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", paddingRight: "16px", color: "#3e5169", fontFamily: "var(--font-mono)", fontSize: "1rem" }}>→</div>
+                {!baseTreks.some((b) => b.id === trek.id) && (
+                  <DeleteTrekButton trekId={trek.id} trekName={trek.name} />
+                )}
               </Link>
             ))}
           </div>

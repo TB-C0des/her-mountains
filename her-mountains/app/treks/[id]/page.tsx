@@ -112,7 +112,7 @@ export default async function TrekPage({ params }: Props) {
         </div>
 
         {/* Gallery */}
-        <TrekGallery photos={galleryPhotos} trekName={trek.name} />
+        <TrekGallery photos={galleryPhotos} trekName={trek.name} trekId={trek.id} />
 
         {/* Upload new photos */}
         <TrekGalleryUploader trekId={trek.id} />
