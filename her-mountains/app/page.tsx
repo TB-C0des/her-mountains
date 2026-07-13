@@ -1,18 +1,22 @@
 import IndiaMap from "./components/IndiaMap";
+import UnlockState from "./components/UnlockState";
 import { getAllTreks } from "../lib/all-treks";
-import { states } from "../data/states";
+import { getAllStates } from "../lib/all-states";
+import { states as baseStates } from "../data/states";
 
 const HOME_BG = "/photos/home/bg.jpg";
 
 export default async function Home() {
   // Build trek pin data server-side so custom treks also get pins
   const allTreks = await getAllTreks();
+  const allStates = await getAllStates();
   const trekPins = allTreks
-    .filter((t) => states.some((s) => s.name === t.state))
+    .filter((t) => allStates.some((s) => s.name === t.state))
     .map((t) => {
-      const state = states.find((s) => s.name === t.state)!;
+      const state = allStates.find((s) => s.name === t.state)!;
       return { trekId: t.id, trekName: t.name, stateId: state.id };
     });
+  const unlockedStateIds = allStates.map((s) => s.id);
 
   return (
     <main style={{ minHeight: "100vh", color: "#2b241c", position: "relative", overflow: "hidden" }}>
@@ -97,13 +101,26 @@ export default async function Home() {
         width: "100%",
         maxWidth: "900px",
         margin: "0 auto",
-        paddingBottom: "60px",
+        paddingBottom: "32px",
         paddingLeft: "16px",
         paddingRight: "16px",
         position: "relative",
         zIndex: 2,
       }}>
         <IndiaMap treks={trekPins} />
+      </section>
+
+      {/* Unlock new state */}
+      <section style={{
+        maxWidth: "640px",
+        margin: "0 auto",
+        paddingBottom: "60px",
+        paddingLeft: "24px",
+        paddingRight: "24px",
+        position: "relative",
+        zIndex: 2,
+      }}>
+        <UnlockState unlockedIds={unlockedStateIds} />
       </section>
 
       {/* Footer */}
