@@ -2,7 +2,6 @@ import IndiaMap from "./components/IndiaMap";
 import UnlockState from "./components/UnlockState";
 import { getAllTreks } from "../lib/all-treks";
 import { getAllStates } from "../lib/all-states";
-import { states as baseStates } from "../data/states";
 
 const HOME_BG = "/photos/home/bg.jpg";
 
@@ -107,7 +106,7 @@ export default async function Home() {
         position: "relative",
         zIndex: 2,
       }}>
-        <IndiaMap treks={trekPins} />
+        <IndiaMap treks={trekPins} activeStates={allStates.map((s) => ({ id: s.id, name: s.name }))} />
       </section>
 
       {/* Unlock new state */}
