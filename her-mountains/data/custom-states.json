@@ -10,5 +10,11 @@
     "name": "Jharkhand",
     "tagline": "Waiting to be explored.",
     "trekNames": []
+  },
+  {
+    "id": "bihar",
+    "name": "Bihar",
+    "tagline": "Waiting to be explored.",
+    "trekNames": []
   }
 ]
