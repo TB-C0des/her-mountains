@@ -8,6 +8,22 @@ import DeleteTrekButton from "../../components/DeleteTrekButton";
 
 type Props = { params: Promise<{ id: string }> };
 
+function MountainHero({ name }: { name: string }) {
+  return (
+    <div style={{ position: "relative", height: "280px", background: "linear-gradient(160deg, #e8d9bc 0%, #d4c49e 55%, #c9b48a 100%)", overflow: "hidden" }}>
+      <svg style={{ position: "absolute", bottom: 0, width: "100%" }} viewBox="0 0 800 160" preserveAspectRatio="none">
+        <path d="M0,160 L0,100 L80,58 L180,90 L280,24 L380,72 L450,38 L540,80 L620,42 L700,78 L800,36 L800,160Z" fill="rgba(82,112,92,0.22)" />
+        <path d="M0,160 L0,120 L70,88 L155,108 L240,62 L330,98 L415,68 L510,105 L590,72 L675,100 L755,65 L800,82 L800,160Z" fill="rgba(82,112,92,0.40)" />
+      </svg>
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(43,36,28,0.55) 0%, transparent 60%)" }} />
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 28px 28px" }}>
+        <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "rgba(245,238,221,0.65)", marginBottom: "4px" }}>stamped in your passport</p>
+        <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.4rem, 8vw, 3.2rem)", fontWeight: 600, fontStyle: "italic", color: "#f5eedd", lineHeight: 1.05, textShadow: "0 2px 20px rgba(0,0,0,0.3)" }}>{name}</h1>
+      </div>
+    </div>
+  );
+}
+
 export default async function StatePage({ params }: Props) {
   const { id } = await params;
   const allStates = await getAllStates();
