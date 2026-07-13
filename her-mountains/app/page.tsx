@@ -6,7 +6,7 @@ const HOME_BG = "/photos/home/bg.jpg";
 
 export default function Home() {
   // Build trek pin data server-side so custom treks also get pins
-  const allTreks = getAllTreks();
+  const allTreks = await getAllTreks();
   const trekPins = allTreks
     .filter((t) => states.some((s) => s.name === t.state))
     .map((t) => {

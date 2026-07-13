@@ -9,7 +9,7 @@ type Props = { params: Promise<{ id: string }> };
 
 export default async function TrekPage({ params }: Props) {
   const { id } = await params;
-  const allTreks = getAllTreks();
+  const allTreks = await getAllTreks();
   const trek = allTreks.find((t) => t.id === id);
 
   if (!trek) {

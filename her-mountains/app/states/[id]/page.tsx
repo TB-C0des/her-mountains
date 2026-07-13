@@ -39,7 +39,7 @@ export default async function StatePage({ params }: Props) {
     );
   }
 
-  const allTreks = getAllTreks();
+  const allTreks = await getAllTreks();
   const stateTreks = allTreks.filter((t) =>
     state.trekNames.includes(t.name) || t.state === state.name
   );
@@ -96,9 +96,11 @@ export default async function StatePage({ params }: Props) {
                   <p style={{ fontSize: "0.83rem", color: "#4a3f35", lineHeight: 1.5, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{trek.yourLines[0]}</p>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", paddingRight: "16px", color: "#3e5169", fontFamily: "var(--font-mono)", fontSize: "1rem" }}>→</div>
-                {!baseTreks.some((b) => b.id === trek.id) && (
-                  <DeleteTrekButton trekId={trek.id} trekName={trek.name} />
-                )}
+                <DeleteTrekButton
+                  trekId={trek.id}
+                  trekName={trek.name}
+                  isCustom={!baseTreks.some((b) => b.id === trek.id)}
+                />
               </Link>
             ))}
           </div>
