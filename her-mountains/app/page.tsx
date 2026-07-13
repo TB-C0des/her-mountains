@@ -119,7 +119,7 @@ export default async function Home() {
         position: "relative",
         zIndex: 2,
       }}>
-        <UnlockState unlockedIds={unlockedStateIds} />
+        <UnlockState activeIds={unlockedStateIds} />
       </section>
 
       {/* Footer */}

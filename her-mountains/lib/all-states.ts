@@ -3,27 +3,38 @@ import { readJsonFile } from "./github";
 import fs from "fs";
 import path from "path";
 
-type StateEntry = {
-  id: string;
-  name: string;
-  tagline: string;
-  trekNames: string[];
-};
+type StateEntry = { id: string; name: string; tagline: string; trekNames: string[] };
 
-const STATES_PATH = "her-mountains/data/custom-states.json";
-const LOCAL_PATH  = path.join(process.cwd(), "data", "custom-states.json");
+const CUSTOM_STATES_PATH  = "her-mountains/data/custom-states.json";
+const REMOVED_STATES_PATH = "her-mountains/data/removed-states.json";
+const LOCAL_CUSTOM  = path.join(process.cwd(), "data", "custom-states.json");
+const LOCAL_REMOVED = path.join(process.cwd(), "data", "removed-states.json");
+
+async function readLocal<T>(p: string): Promise<T[]> {
+  if (!fs.existsSync(p)) return [];
+  return JSON.parse(fs.readFileSync(p, "utf-8"));
+}
 
 export async function getAllStates(): Promise<StateEntry[]> {
-  let custom: StateEntry[] = [];
+  let customStates: StateEntry[] = [];
+  let removedIds: string[] = [];
+
   if (process.env.GITHUB_TOKEN) {
-    custom = (await readJsonFile<StateEntry[]>(STATES_PATH)) ?? [];
+    customStates = (await readJsonFile<StateEntry[]>(CUSTOM_STATES_PATH)) ?? [];
+    removedIds   = (await readJsonFile<string[]>(REMOVED_STATES_PATH)) ?? [];
   } else {
-    if (fs.existsSync(LOCAL_PATH)) {
-      custom = JSON.parse(fs.readFileSync(LOCAL_PATH, "utf-8"));
-    }
+    customStates = await readLocal<StateEntry>(LOCAL_CUSTOM);
+    removedIds   = await readLocal<string>(LOCAL_REMOVED);
   }
-  // Merge — custom states not already in base
+
   const baseIds = new Set(baseStates.map((s) => s.id));
-  const newCustom = custom.filter((s) => !baseIds.has(s.id));
-  return [...baseStates, ...newCustom];
+  const activeBase = baseStates.filter((s) => !removedIds.includes(s.id));
+  const newCustom  = customStates.filter((s) => !baseIds.has(s.id));
+  return [...activeBase, ...newCustom];
+}
+
+// Returns IDs of all states that are currently active (for the manage UI)
+export async function getActiveStateIds(): Promise<string[]> {
+  const all = await getAllStates();
+  return all.map((s) => s.id);
 }

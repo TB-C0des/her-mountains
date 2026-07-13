@@ -4,20 +4,18 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { allIndiaStates } from "../../data/all-india-states";
 
-// Base state IDs that cannot be deleted
-const BASE_STATE_IDS = new Set(["maharashtra", "karnataka", "uttarakhand", "himachal-pradesh"]);
-
-export default function UnlockState({ unlockedIds }: { unlockedIds: string[] }) {
+export default function UnlockState({ activeIds }: { activeIds: string[] }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState<string | null>(null);
+  const [localActive, setLocalActive] = useState<Set<string>>(new Set(activeIds));
   const [search, setSearch] = useState("");
 
   const filtered = allIndiaStates.filter((s) =>
     s.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  async function handleUnlock(stateId: string) {
+  async function handleToggle(stateId: string) {
     setLoading(stateId);
     try {
       const res = await fetch("/api/unlock-state", {
@@ -26,40 +24,40 @@ export default function UnlockState({ unlockedIds }: { unlockedIds: string[] }) 
         body: JSON.stringify({ stateId }),
       });
       const data = await res.json();
-      if (data.ok) { router.refresh(); }
-      else alert(data.error ?? "Failed to unlock state.");
-    } finally { setLoading(null); }
-  }
-
-  async function handleDelete(stateId: string, stateName: string) {
-    if (!confirm(`Remove "${stateName}" from your journal? Its treks will no longer appear.`)) return;
-    setLoading(stateId);
-    try {
-      const res = await fetch("/api/delete-state", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ stateId }),
-      });
-      const data = await res.json();
-      if (data.ok) { router.refresh(); }
-      else alert(data.error ?? "Failed to remove state.");
-    } finally { setLoading(null); }
+      if (data.ok) {
+        setLocalActive((prev) => {
+          const next = new Set(prev);
+          if (next.has(stateId)) next.delete(stateId); else next.add(stateId);
+          return next;
+        });
+        router.refresh();
+      } else {
+        alert(data.error ?? "Something went wrong.");
+      }
+    } finally {
+      setLoading(null);
+    }
   }
 
   return (
     <div style={{ marginTop: "48px" }}>
       {!open ? (
-        <button onClick={() => setOpen(true)}
-          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", width: "100%", padding: "14px 20px", fontFamily: "var(--font-mono)", fontSize: "0.68rem", letterSpacing: "0.1em", color: "#52705c", background: "rgba(82,112,92,0.06)", border: "1.5px dashed rgba(82,112,92,0.35)", borderRadius: "10px", cursor: "pointer" }}>
+        <button
+          onClick={() => setOpen(true)}
+          style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px", width: "100%", padding: "14px 20px", fontFamily: "var(--font-mono)", fontSize: "0.68rem", letterSpacing: "0.1em", color: "#52705c", background: "rgba(82,112,92,0.06)", border: "1.5px dashed rgba(82,112,92,0.35)", borderRadius: "10px", cursor: "pointer" }}
+        >
           <span style={{ fontSize: "1rem" }}>🗺️</span>
           manage states
         </button>
       ) : (
         <div style={{ borderRadius: "12px", border: "1px solid rgba(43,36,28,0.12)", background: "#ece0c4", padding: "20px", boxShadow: "0 4px 20px rgba(43,36,28,0.08)" }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
             <p style={{ fontFamily: "var(--font-display)", fontSize: "1.1rem", fontStyle: "italic", color: "#2b241c" }}>Manage states</p>
             <button onClick={() => setOpen(false)} style={{ background: "none", border: "none", color: "#6b5f4f", fontSize: "1.2rem", cursor: "pointer" }}>×</button>
           </div>
+          <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.58rem", color: "#6b5f4f", letterSpacing: "0.1em", marginBottom: "14px" }}>
+            Click to add · click again to remove
+          </p>
 
           <input type="text" placeholder="Search states & UTs…" value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -67,37 +65,37 @@ export default function UnlockState({ unlockedIds }: { unlockedIds: string[] }) 
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "8px", maxHeight: "300px", overflowY: "auto" }}>
             {filtered.map((s) => {
-              const isUnlocked = unlockedIds.includes(s.id);
-              const isBase = BASE_STATE_IDS.has(s.id);
+              const isActive = localActive.has(s.id);
               const isLoading = loading === s.id;
               return (
-                <div key={s.id} style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-                  <button
-                    onClick={() => !isUnlocked && handleUnlock(s.id)}
-                    disabled={isUnlocked || isLoading}
-                    style={{ flex: 1, padding: "10px 12px", borderRadius: "8px", border: isUnlocked ? "1px solid rgba(82,112,92,0.4)" : "1px solid rgba(43,36,28,0.15)", background: isUnlocked ? "rgba(82,112,92,0.12)" : "rgba(245,238,221,0.7)", color: isUnlocked ? "#52705c" : "#2b241c", fontFamily: "var(--font-body)", fontSize: "0.78rem", cursor: isUnlocked ? "default" : "pointer", textAlign: "left", display: "flex", alignItems: "center", justifyContent: "space-between", opacity: isLoading ? 0.6 : 1 }}>
-                    <span>{s.name}</span>
-                    <span style={{ fontSize: "0.65rem", color: isUnlocked ? "#52705c" : "#6b5f4f", flexShrink: 0 }}>
-                      {isLoading ? "…" : isUnlocked ? "✓" : s.type === "ut" ? "UT" : ""}
-                    </span>
-                  </button>
-                  {/* Delete button — only for unlocked non-base states */}
-                  {isUnlocked && !isBase && (
-                    <button
-                      onClick={() => handleDelete(s.id, s.name)}
-                      disabled={isLoading}
-                      title="Remove state"
-                      style={{ width: "26px", height: "26px", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "rgba(201,123,75,0.12)", border: "1px solid rgba(201,123,75,0.3)", borderRadius: "50%", color: "#c97b4b", fontSize: "0.8rem", cursor: "pointer" }}>
-                      ×
-                    </button>
-                  )}
-                </div>
+                <button
+                  key={s.id}
+                  onClick={() => handleToggle(s.id)}
+                  disabled={isLoading}
+                  style={{
+                    padding: "10px 14px", borderRadius: "8px",
+                    border: isActive ? "1px solid rgba(82,112,92,0.5)" : "1px solid rgba(43,36,28,0.15)",
+                    background: isActive ? "rgba(82,112,92,0.15)" : "rgba(245,238,221,0.7)",
+                    color: isActive ? "#3d5445" : "#2b241c",
+                    fontFamily: "var(--font-body)", fontSize: "0.78rem",
+                    cursor: isLoading ? "not-allowed" : "pointer",
+                    textAlign: "left", display: "flex", alignItems: "center",
+                    justifyContent: "space-between", gap: "6px",
+                    opacity: isLoading ? 0.55 : 1,
+                    transition: "all 0.15s ease",
+                    fontWeight: isActive ? 500 : 400,
+                  }}
+                >
+                  <span>{s.name}</span>
+                  <span style={{ fontSize: "0.65rem", flexShrink: 0, color: isActive ? "#52705c" : "#9e8f7a" }}>
+                    {isLoading ? "…" : isActive ? "✓" : s.type === "ut" ? "UT" : "+"}
+                  </span>
+                </button>
               );
             })}
           </div>
-
-          <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.58rem", color: "rgba(43,36,28,0.4)", letterSpacing: "0.1em", marginTop: "12px", textAlign: "center" }}>
-            ✓ unlocked · UT = Union Territory · × removes custom states only
+          <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.55rem", color: "rgba(43,36,28,0.38)", letterSpacing: "0.08em", marginTop: "10px", textAlign: "center" }}>
+            ✓ active · + not yet added · UT = Union Territory
           </p>
         </div>
       )}
