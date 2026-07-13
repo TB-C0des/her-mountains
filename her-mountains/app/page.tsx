@@ -4,7 +4,7 @@ import { states } from "../data/states";
 
 const HOME_BG = "/photos/home/bg.jpg";
 
-export default function Home() {
+export default async function Home() {
   // Build trek pin data server-side so custom treks also get pins
   const allTreks = await getAllTreks();
   const trekPins = allTreks
