@@ -10,5 +10,17 @@
     "prompts": [
       "What moment stands out from this trek?"
     ]
+  },
+  {
+    "id": "kedarkantha",
+    "name": "Kedarkantha",
+    "state": "Uttarakhand",
+    "stateId": "uttarakhand",
+    "yourLines": [
+      "A trek worth remembering."
+    ],
+    "prompts": [
+      "What moment stands out from this trek?"
+    ]
   }
 ]
