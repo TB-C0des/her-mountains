@@ -5,6 +5,7 @@ import { getAllStates } from "../../../lib/all-states";
 import { getStateBg, getTrekCover } from "../../../lib/photos";
 import AddTrekForm from "../../components/AddTrekForm";
 import DeleteTrekButton from "../../components/DeleteTrekButton";
+import EditStateContent from "../../components/EditStateContent";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -68,9 +69,13 @@ export default async function StatePage({ params }: Props) {
       {/* Content */}
       <section style={{ maxWidth: "672px", margin: "0 auto", padding: "32px 24px 80px" }}>
 
-        <p style={{ fontFamily: "var(--font-display)", fontSize: "1.15rem", fontStyle: "italic", color: "#4a3f35", marginBottom: "36px", lineHeight: 1.6 }}>
+        <p style={{ fontFamily: "var(--font-display)", fontSize: "1.15rem", fontStyle: "italic", color: "#4a3f35", marginBottom: "12px", lineHeight: 1.6 }}>
           {state.tagline}
         </p>
+
+        <EditStateContent stateId={state.id} initialTagline={state.tagline} />
+
+        <div style={{ marginBottom: "28px" }} />
 
         <p style={{ fontFamily: "var(--font-mono)", fontSize: "0.6rem", letterSpacing: "0.2em", textTransform: "uppercase", color: "#5a4f45", marginBottom: "16px" }}>
           treks · {stateTreks.length} recorded
