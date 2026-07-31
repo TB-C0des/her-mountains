@@ -6,5 +6,13 @@
     "prompts": [
       "Do you remember the last climb to the top, when instructors thought now is a good time to take a shortcut :D"
     ]
+  },
+  "brahmatal": {
+    "yourLines": [
+      "Your first time in himalayas, the mountains, ganga, it's ghats.."
+    ],
+    "prompts": [
+      "Which moment on the snow felt unreal?"
+    ]
   }
 }
