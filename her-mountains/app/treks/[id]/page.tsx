@@ -41,7 +41,7 @@ export default async function TrekPage({ params }: Props) {
 
       {/* Hero */}
       <div style={{ position: "relative", height: "clamp(320px, 52vw, 500px)", overflow: "hidden", backgroundColor: "#ddd2b8" }}>
-        <div style={{ position: "absolute", inset: 0, backgroundImage: `url(${coverPhoto})`, backgroundSize: "cover", backgroundPosition: "center" }} />
+        {coverPhoto && <div data-trek-hero style={{ position: "absolute", inset: 0, backgroundImage: `url(${coverPhoto})`, backgroundSize: "cover", backgroundPosition: "center" }} />}
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.04) 0%, transparent 35%, rgba(237,228,208,0.55) 88%, #ede4d0 100%)" }} />
       </div>
 

@@ -1,10 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function TrekCoverUploader({ trekId }: { trekId: string }) {
-  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -15,6 +13,10 @@ export default function TrekCoverUploader({ trekId }: { trekId: string }) {
     setUploading(true);
     setMsg(null);
 
+    // Show a local preview immediately while uploading
+    const localUrl = URL.createObjectURL(file);
+    updateHeroDom(localUrl);
+
     const fd = new FormData();
     fd.append("trekId", trekId);
     fd.append("photos", file);
@@ -23,19 +25,35 @@ export default function TrekCoverUploader({ trekId }: { trekId: string }) {
       const res = await fetch("/api/upload-trek-cover", { method: "POST", body: fd });
       const data = await res.json();
       if (data.ok) {
-        setMsg("Cover updated! Refreshing…");
-        setTimeout(() => { router.refresh(); setMsg(null); }, 1400);
+        // Replace local blob URL with the GitHub raw URL the server returned
+        if (data.url) updateHeroDom(data.url);
+        setMsg("✓ Cover updated");
+        setTimeout(() => setMsg(null), 3000);
       } else {
         setMsg("Error: " + (data.error ?? "upload failed"));
+        // Revert preview on error
+        updateHeroDom(null);
       }
+    } catch {
+      setMsg("Network error — please try again.");
+      updateHeroDom(null);
     } finally {
       setUploading(false);
       if (inputRef.current) inputRef.current.value = "";
+      URL.revokeObjectURL(localUrl);
     }
   }
 
+  /** Update the hero background-image on the page without a full reload */
+  function updateHeroDom(url: string | null) {
+    if (!url) return;
+    // The hero div is the first child of <main> — find it by its data attribute
+    const hero = document.querySelector<HTMLDivElement>("[data-trek-hero]");
+    if (hero) hero.style.backgroundImage = `url(${url})`;
+  }
+
   return (
-    <div style={{ marginTop: "16px" }}>
+    <div style={{ marginBottom: "20px" }}>
       <label
         style={{
           display: "inline-flex", alignItems: "center", gap: "6px",
@@ -58,7 +76,11 @@ export default function TrekCoverUploader({ trekId }: { trekId: string }) {
         />
       </label>
       {msg && (
-        <p style={{ fontFamily: "var(--font-body)", fontSize: "0.78rem", color: msg.startsWith("Error") ? "#c97b4b" : "#52705c", marginTop: "6px" }}>
+        <p style={{
+          fontFamily: "var(--font-body)", fontSize: "0.78rem",
+          color: msg.startsWith("Error") || msg.startsWith("Network") ? "#c97b4b" : "#52705c",
+          marginTop: "6px",
+        }}>
           {msg}
         </p>
       )}

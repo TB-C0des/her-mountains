@@ -10,9 +10,8 @@ function rawUrl(ghPath: string): string {
   const owner  = process.env.GITHUB_OWNER!;
   const repo   = process.env.GITHUB_REPO!;
   const branch = process.env.GITHUB_BRANCH ?? "main";
-  // Cache-bust with minute-level timestamp so CDN doesn't serve stale files
-  const bust = Math.floor(Date.now() / 60000);
-  return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${ghPath}?t=${bust}`;
+  // Per-second cache bust — ensures CDN never serves stale photos
+  return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${ghPath}?t=${Date.now()}`;
 }
 
 async function listGitHubDir(ghPath: string): Promise<string[]> {
