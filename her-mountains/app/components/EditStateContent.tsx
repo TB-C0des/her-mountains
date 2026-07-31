@@ -11,8 +11,7 @@ export default function EditStateContent({
   initialTagline: string;
 }) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
-  const [tagline, setTagline] = useState(initialTagline);
+  const [open, setOpen] = useState(false);  const [tagline, setTagline] = useState(initialTagline);
   const [savingTagline, setSavingTagline] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -45,6 +44,11 @@ export default function EditStateContent({
     if (!file) return;
     setUploadingCover(true);
     setMsg(null);
+
+    // Show local preview immediately
+    const localUrl = URL.createObjectURL(file);
+    updateHeroDom(localUrl);
+
     const fd = new FormData();
     fd.append("stateId", stateId);
     fd.append("photos", file);
@@ -52,15 +56,24 @@ export default function EditStateContent({
       const res = await fetch("/api/upload-state-cover", { method: "POST", body: fd });
       const data = await res.json();
       if (data.ok) {
-        setMsg("Cover updated! Refreshing…");
-        setTimeout(() => { router.refresh(); setOpen(false); setMsg(null); }, 1400);
+        if (data.url) updateHeroDom(data.url);
+        setMsg("Cover updated!");
+        setTimeout(() => setMsg(null), 3000);
       } else {
         setMsg("Error: " + (data.error ?? "upload failed"));
+        updateHeroDom(null);
       }
     } finally {
       setUploadingCover(false);
       if (fileRef.current) fileRef.current.value = "";
+      URL.revokeObjectURL(localUrl);
     }
+  }
+
+  function updateHeroDom(url: string | null) {
+    if (!url) return;
+    const hero = document.querySelector<HTMLDivElement>("[data-state-hero]");
+    if (hero) hero.style.backgroundImage = `url(${url})`;
   }
 
   if (!open) {

@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs";
 import path from "path";
-import { commitFile } from "../../../lib/github";
+import { commitFile, readJsonFile } from "../../../lib/github";
+
+// cover-overrides.json stores the definitive cover URL for each trek/state
+// keyed by id. This bypasses raw.githubusercontent.com CDN caching entirely.
+const COVER_OVERRIDES_PATH = "her-mountains/data/cover-overrides.json";
+const LOCAL_COVER_OVERRIDES = path.join(process.cwd(), "data", "cover-overrides.json");
 
 export async function POST(req: NextRequest) {
   try {
@@ -20,27 +25,47 @@ export async function POST(req: NextRequest) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    // Always save as cover.jpg — overwrites the existing cover
     const filename = `cover.${ext}`;
 
     if (process.env.GITHUB_TOKEN) {
-      const ghPath = `her-mountains/public/photos/${trekId}/${filename}`;
-      await commitFile(ghPath, buffer.toString("base64"), `Update cover for ${trekId}`);
-      // Return the raw URL so the client can update immediately
       const owner  = process.env.GITHUB_OWNER!;
       const repo   = process.env.GITHUB_REPO!;
       const branch = process.env.GITHUB_BRANCH ?? "main";
-      // Use a per-second cache-buster so CDN serves the new file
+
+      // 1. Commit the actual image file
+      const ghPath = `her-mountains/public/photos/${trekId}/${filename}`;
+      await commitFile(ghPath, buffer.toString("base64"), `Update cover for ${trekId}`);
+
+      // 2. Store the cover URL in cover-overrides.json with a unique timestamp
+      //    This JSON file is read via GitHub API (no CDN), so it's always fresh
       const bust = Date.now();
-      const newUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${ghPath}?t=${bust}`;
-      return NextResponse.json({ ok: true, url: newUrl });
+      const coverUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${ghPath}?t=${bust}`;
+
+      const overrides = (await readJsonFile<Record<string, string>>(COVER_OVERRIDES_PATH)) ?? {};
+      overrides[trekId] = coverUrl;
+      await commitFile(
+        COVER_OVERRIDES_PATH,
+        Buffer.from(JSON.stringify(overrides, null, 2)).toString("base64"),
+        `Update cover URL for ${trekId}`
+      );
+
+      return NextResponse.json({ ok: true, url: coverUrl });
     } else {
+      // Local dev — write to disk
       const dir = path.join(process.cwd(), "public", "photos", trekId);
       if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
       fs.writeFileSync(path.join(dir, filename), buffer);
-    }
 
-    return NextResponse.json({ ok: true });
+      // Update local cover-overrides.json
+      let overrides: Record<string, string> = {};
+      if (fs.existsSync(LOCAL_COVER_OVERRIDES)) {
+        overrides = JSON.parse(fs.readFileSync(LOCAL_COVER_OVERRIDES, "utf-8"));
+      }
+      overrides[trekId] = `/photos/${trekId}/${filename}`;
+      fs.writeFileSync(LOCAL_COVER_OVERRIDES, JSON.stringify(overrides, null, 2));
+
+      return NextResponse.json({ ok: true, url: `/photos/${trekId}/${filename}` });
+    }
   } catch (e) {
     return NextResponse.json({ ok: false, error: String(e) }, { status: 500 });
   }

@@ -56,7 +56,7 @@ export default async function StatePage({ params }: Props) {
 
       {/* Hero */}
       {heroPhoto ? (
-        <div style={{ position: "relative", height: "clamp(280px, 45vw, 380px)", backgroundImage: `url(${heroPhoto})`, backgroundSize: "cover", backgroundPosition: "center" }}>
+        <div data-state-hero style={{ position: "relative", height: "clamp(280px, 45vw, 380px)", backgroundImage: `url(${heroPhoto})`, backgroundSize: "cover", backgroundPosition: "center" }}>
           {/* Dark gradient only at the bottom for text legibility — no light wash */}
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(20,14,8,0.72) 0%, rgba(20,14,8,0.25) 40%, transparent 75%)" }} />
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "0 24px 28px" }}>
