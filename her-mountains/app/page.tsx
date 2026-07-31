@@ -1,8 +1,24 @@
 import IndiaMap from "./components/IndiaMap";
+import UnlockState from "./components/UnlockState";
+import { getAllTreks } from "../lib/all-treks";
+import { getAllStates } from "../lib/all-states";
+
+export const dynamic = "force-dynamic";
 
 const HOME_BG = "/photos/home/bg.jpg";
 
-export default function Home() {
+export default async function Home() {
+  // Build trek pin data server-side so custom treks also get pins
+  const allTreks = await getAllTreks();
+  const allStates = await getAllStates();
+  const trekPins = allTreks
+    .filter((t) => allStates.some((s) => s.name === t.state))
+    .map((t) => {
+      const state = allStates.find((s) => s.name === t.state)!;
+      return { trekId: t.id, trekName: t.name, stateId: state.id };
+    });
+  const unlockedStateIds = allStates.map((s) => s.id);
+
   return (
     <main style={{ minHeight: "100vh", color: "#2b241c", position: "relative", overflow: "hidden" }}>
 
@@ -36,46 +52,40 @@ export default function Home() {
           zIndex: 2,
         }}
       >
-        <p
-          style={{
-            fontFamily: "var(--font-mono)",
-            fontSize: "0.62rem",
-            letterSpacing: "0.22em",
-            textTransform: "uppercase",
-            color: "#4a3f35",
-            marginBottom: "14px",
-            textShadow: "0 1px 8px rgba(245,238,221,0.8)",
-          }}
-        >
+        <p style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: "0.62rem",
+          letterSpacing: "0.22em",
+          textTransform: "uppercase",
+          color: "#4a3f35",
+          marginBottom: "14px",
+          textShadow: "0 1px 8px rgba(245,238,221,0.8)",
+        }}>
           a field journal, kept for you
         </p>
 
-        <h1
-          style={{
-            fontFamily: "var(--font-display)",
-            fontSize: "clamp(3rem, 10vw, 5rem)",
-            fontWeight: 600,
-            fontStyle: "italic",
-            lineHeight: 1.0,
-            color: "#1a1208",
-            letterSpacing: "-0.02em",
-            marginBottom: "18px",
-            textShadow: "0 2px 16px rgba(245,238,221,0.7)",
-          }}
-        >
+        <h1 style={{
+          fontFamily: "var(--font-display)",
+          fontSize: "clamp(3rem, 10vw, 5rem)",
+          fontWeight: 600,
+          fontStyle: "italic",
+          lineHeight: 1.0,
+          color: "#1a1208",
+          letterSpacing: "-0.02em",
+          marginBottom: "18px",
+          textShadow: "0 2px 16px rgba(245,238,221,0.7)",
+        }}>
           Her Mountains
         </h1>
 
-        <p
-          style={{
-            fontSize: "0.95rem",
-            lineHeight: 1.7,
-            color: "#2b241c",
-            maxWidth: "340px",
-            margin: "0 auto 24px",
-            textShadow: "0 1px 8px rgba(245,238,221,0.8)",
-          }}
-        >
+        <p style={{
+          fontSize: "0.95rem",
+          lineHeight: 1.7,
+          color: "#2b241c",
+          maxWidth: "340px",
+          margin: "0 auto 24px",
+          textShadow: "0 1px 8px rgba(245,238,221,0.8)",
+        }}>
           Every ridge you climbed, every summit you earned —
           tap a state to walk it again.
         </p>
@@ -88,19 +98,30 @@ export default function Home() {
       </section>
 
       {/* Map */}
-      <section
-        style={{
-          width: "100%",
-          maxWidth: "900px",
-          margin: "0 auto",
-          paddingBottom: "60px",
-          paddingLeft: "16px",
-          paddingRight: "16px",
-          position: "relative",
-          zIndex: 2,
-        }}
-      >
-        <IndiaMap />
+      <section style={{
+        width: "100%",
+        maxWidth: "900px",
+        margin: "0 auto",
+        paddingBottom: "32px",
+        paddingLeft: "16px",
+        paddingRight: "16px",
+        position: "relative",
+        zIndex: 2,
+      }}>
+        <IndiaMap treks={trekPins} activeStates={allStates.map((s) => ({ id: s.id, name: s.name }))} />
+      </section>
+
+      {/* Unlock new state */}
+      <section style={{
+        maxWidth: "640px",
+        margin: "0 auto",
+        paddingBottom: "60px",
+        paddingLeft: "24px",
+        paddingRight: "24px",
+        position: "relative",
+        zIndex: 2,
+      }}>
+        <UnlockState activeIds={unlockedStateIds} />
       </section>
 
       {/* Footer */}
