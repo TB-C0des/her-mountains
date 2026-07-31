@@ -82,7 +82,7 @@ export default function EditTrekContent({
           <textarea value={yourLines} onChange={(e) => setYourLines(e.target.value)} rows={3} style={inputStyle} />
         </div>
         <div>
-          <label style={labelStyle}>Memory corner prompts (one per line)</label>
+          <label style={labelStyle}>Memory corner (one per line)</label>
           <textarea value={prompts} onChange={(e) => setPrompts(e.target.value)} rows={4} style={inputStyle} />
         </div>
 
