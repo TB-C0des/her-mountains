@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
 
       // 2. Store URL in cover-overrides.json with unique bust timestamp
       const bust = Date.now();
-      const coverUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${ghPath}?t=${bust}`;
+      const coverUrl = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@${branch}/${ghPath}?t=${bust}`;
       const key = `states/${stateId}`;
 
       const overrides = (await readJsonFile<Record<string, string>>(COVER_OVERRIDES_PATH)) ?? {};

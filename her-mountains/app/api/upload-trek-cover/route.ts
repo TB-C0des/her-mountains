@@ -36,10 +36,10 @@ export async function POST(req: NextRequest) {
       const ghPath = `her-mountains/public/photos/${trekId}/${filename}`;
       await commitFile(ghPath, buffer.toString("base64"), `Update cover for ${trekId}`);
 
-      // 2. Store the cover URL in cover-overrides.json with a unique timestamp
-      //    This JSON file is read via GitHub API (no CDN), so it's always fresh
+      // 2. Store the cover URL in cover-overrides.json
+      // Use jsDelivr — properly respects cache invalidation on new commits
       const bust = Date.now();
-      const coverUrl = `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${ghPath}?t=${bust}`;
+      const coverUrl = `https://cdn.jsdelivr.net/gh/${owner}/${repo}@${branch}/${ghPath}?t=${bust}`;
 
       const overrides = (await readJsonFile<Record<string, string>>(COVER_OVERRIDES_PATH)) ?? {};
       overrides[trekId] = coverUrl;

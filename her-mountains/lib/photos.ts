@@ -26,8 +26,9 @@ function rawUrl(ghPath: string, bust?: number): string {
   const owner  = process.env.GITHUB_OWNER!;
   const repo   = process.env.GITHUB_REPO!;
   const branch = process.env.GITHUB_BRANCH ?? "main";
-  const t = bust ?? Math.floor(Date.now() / 30000); // 30s cache bust
-  return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${ghPath}?t=${t}`;
+  // Use jsDelivr — properly purges cache on new commits, unlike raw.githubusercontent.com
+  const t = bust ?? Date.now();
+  return `https://cdn.jsdelivr.net/gh/${owner}/${repo}@${branch}/${ghPath}?t=${t}`;
 }
 
 async function listGitHubDir(ghPath: string): Promise<string[]> {
