@@ -3,6 +3,7 @@ import { getAllStates } from "../../../lib/all-states";
 import Link from "next/link";
 import TrekGallery from "../../components/TrekGallery";
 import TrekGalleryUploader from "../../components/PhotoUploader";
+import TrekCoverUploader from "../../components/TrekCoverUploader";
 import EditTrekContent from "../../components/EditTrekContent";
 import { getTrekPhotos, getTrekCover } from "../../../lib/photos";
 
@@ -54,6 +55,9 @@ export default async function TrekPage({ params }: Props) {
         <h1 style={{ fontFamily: "var(--font-display)", fontSize: "clamp(2.2rem, 7vw, 3.2rem)", fontWeight: 600, fontStyle: "italic", lineHeight: 1.05, marginBottom: "28px", letterSpacing: "-0.02em", color: "#2b241c" }}>
           {trek.name}
         </h1>
+        
+        {/* Change cover photo */}
+        <TrekCoverUploader trekId={trek.id} />
 
         {/* ── Personal note ── */}
         <div style={{ borderRadius: "12px", padding: "24px 28px", marginBottom: "8px", background: "rgba(210,196,168,0.7)", borderLeft: "4px solid #d97a46" }}>
