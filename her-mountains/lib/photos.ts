@@ -10,7 +10,9 @@ function rawUrl(ghPath: string): string {
   const owner  = process.env.GITHUB_OWNER!;
   const repo   = process.env.GITHUB_REPO!;
   const branch = process.env.GITHUB_BRANCH ?? "main";
-  return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${ghPath}`;
+  // Cache-bust with minute-level timestamp so CDN doesn't serve stale files
+  const bust = Math.floor(Date.now() / 60000);
+  return `https://raw.githubusercontent.com/${owner}/${repo}/${branch}/${ghPath}?t=${bust}`;
 }
 
 async function listGitHubDir(ghPath: string): Promise<string[]> {

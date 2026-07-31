@@ -7,6 +7,8 @@ import AddTrekForm from "../../components/AddTrekForm";
 import DeleteTrekButton from "../../components/DeleteTrekButton";
 import EditStateContent from "../../components/EditStateContent";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: Promise<{ id: string }> };
 
 function MountainHero({ name }: { name: string }) {

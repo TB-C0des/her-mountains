@@ -3,6 +3,8 @@ import UnlockState from "./components/UnlockState";
 import { getAllTreks } from "../lib/all-treks";
 import { getAllStates } from "../lib/all-states";
 
+export const dynamic = "force-dynamic";
+
 const HOME_BG = "/photos/home/bg.jpg";
 
 export default async function Home() {

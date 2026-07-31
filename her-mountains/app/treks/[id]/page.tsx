@@ -7,6 +7,8 @@ import TrekCoverUploader from "../../components/TrekCoverUploader";
 import EditTrekContent from "../../components/EditTrekContent";
 import { getTrekPhotos, getTrekCover } from "../../../lib/photos";
 
+export const dynamic = "force-dynamic";
+
 type Props = { params: Promise<{ id: string }> };
 
 export default async function TrekPage({ params }: Props) {
